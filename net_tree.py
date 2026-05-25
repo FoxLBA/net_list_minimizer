@@ -83,21 +83,27 @@ class Node:
 
         if self.is_real_net:
             return 1
+        
+        # C1 is filled in first, then C2. Therefore, if there is no C1, then there is no C2.
+        if not self.child1:
+            self.child1 = NewNode
 
-        for Child in (self.child1, self.child2):
-            if Child and Child.addSubnet(NewNode):
-                self.collapseRealChilds()
-                return 1
+        if self.child1.addSubnet(NewNode):
+            self.collapseRealChilds()
+            return 1
+        
+        if self.child2 and self.child2.addSubnet(NewNode):
+            self.collapseRealChilds()
+            return 1
 
-        if self.child1:
-            CommonNet = self.child1.net.getCommonNet(NewNode.net, self.net.mask_size + 1)
-            if CommonNet:
-                CommonNode = Node(CommonNet, 0)
-                CommonNode.addSubnet(NewNode)
-                CommonNode.addSubnet(self.child1)
-                self.child1 = CommonNode
-                self.collapseRealChilds()
-                return 1
+        CommonNet = self.child1.net.getCommonNet(NewNode.net, self.net.mask_size + 1)
+        if CommonNet:
+            CommonNode = Node(CommonNet, 0)
+            CommonNode.addSubnet(NewNode)
+            CommonNode.addSubnet(self.child1)
+            self.child1 = CommonNode
+            self.collapseRealChilds()
+            return 1
 
         if self.child2:
             CommonNet = self.child2.net.getCommonNet(NewNode.net, self.net.mask_size + 1)
@@ -109,12 +115,8 @@ class Node:
                 self.collapseRealChilds()
                 return 1
 
-        if not self.child1:
-            self.child1 = NewNode
-        else:
-            self.child2 = NewNode
-            self.collapseRealChilds()
-
+        self.child2 = NewNode
+        self.collapseRealChilds()
         return 1
 
     def printTree(self, level):
