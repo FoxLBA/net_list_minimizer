@@ -60,6 +60,15 @@ class Node:
 
     def getNet(self):
         return self.net
+    
+    def collapseRealChilds(self):
+        if self.child1 and self.child2 and self.child1.is_real_net and self.child2.is_real_net:
+            c1_mask_size = self.child1.net.mask_size
+            if c1_mask_size == self.child2.net.mask_size and (c1_mask_size == (self.net.mask_size + 1)):
+                self.is_real_net = 1
+                self.child1 = None
+                self.child2 = None
+        return
 
     def addSubnet(self, NewNode: 'Node'):
         if self.net.isSameNet(NewNode.net):
@@ -77,6 +86,7 @@ class Node:
 
         for Child in (self.child1, self.child2):
             if Child and Child.addSubnet(NewNode):
+                self.collapseRealChilds()
                 return 1
 
         if self.child1:
@@ -86,6 +96,7 @@ class Node:
                 CommonNode.addSubnet(NewNode)
                 CommonNode.addSubnet(self.child1)
                 self.child1 = CommonNode
+                self.collapseRealChilds()
                 return 1
 
         if self.child2:
@@ -95,12 +106,14 @@ class Node:
                 CommonNode.addSubnet(NewNode)
                 CommonNode.addSubnet(self.child2)
                 self.child2 = CommonNode
+                self.collapseRealChilds()
                 return 1
 
         if not self.child1:
             self.child1 = NewNode
         else:
             self.child2 = NewNode
+            self.collapseRealChilds()
 
         return 1
 
