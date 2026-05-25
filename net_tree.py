@@ -78,11 +78,11 @@ class Node:
                 self.child2 = None
             return 1
 
-        if self.is_real_net and self.net.hasSubnet(NewNode.net):
-            return 1
-
         if not self.net.hasSubnet(NewNode.net):
             return 0
+
+        if self.is_real_net:
+            return 1
 
         for Child in (self.child1, self.child2):
             if Child and Child.addSubnet(NewNode):
