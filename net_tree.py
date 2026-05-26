@@ -87,6 +87,7 @@ class Node:
         # C1 is filled in first, then C2. Therefore, if there is no C1, then there is no C2.
         if not self.child1:
             self.child1 = NewNode
+            return 1
 
         if self.child1.addSubnet(NewNode):
             self.collapseRealChilds()
