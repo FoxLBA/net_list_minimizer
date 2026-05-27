@@ -61,7 +61,7 @@ class Node:
     def getNet(self):
         return self.net
     
-    def collapseRealChilds(self):
+    def collapseRealChildren(self):
         if self.child1 and self.child2 and self.child1.is_real_net and self.child2.is_real_net:
             c1_mask_size = self.child1.net.mask_size
             if c1_mask_size == self.child2.net.mask_size and (c1_mask_size == (self.net.mask_size + 1)):
@@ -90,11 +90,11 @@ class Node:
             return 1
 
         if self.child1.addSubnet(NewNode):
-            self.collapseRealChilds()
+            self.collapseRealChildren()
             return 1
         
         if self.child2 and self.child2.addSubnet(NewNode):
-            self.collapseRealChilds()
+            self.collapseRealChildren()
             return 1
 
         CommonNet = self.child1.net.getCommonNet(NewNode.net, self.net.mask_size + 1)
@@ -103,7 +103,7 @@ class Node:
             CommonNode.addSubnet(NewNode)
             CommonNode.addSubnet(self.child1)
             self.child1 = CommonNode
-            self.collapseRealChilds()
+            self.collapseRealChildren()
             return 1
 
         if self.child2:
@@ -113,11 +113,11 @@ class Node:
                 CommonNode.addSubnet(NewNode)
                 CommonNode.addSubnet(self.child2)
                 self.child2 = CommonNode
-                self.collapseRealChilds()
+                self.collapseRealChildren()
                 return 1
 
         self.child2 = NewNode
-        self.collapseRealChilds()
+        self.collapseRealChildren()
         return 1
 
     def printTree(self, level):
